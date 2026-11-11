@@ -1,5 +1,7 @@
 # DeskFlow AI
 
+[![Testes](https://github.com/Tyago03/DeskFlow-AI/actions/workflows/tests.yml/badge.svg)](https://github.com/Tyago03/DeskFlow-AI/actions/workflows/tests.yml)
+
 **Triagem inteligente de solicitações com IA local, n8n e revisão humana.**
 
 Projeto de portfólio voltado à construção de automações corporativas com inteligência artificial. O DeskFlow recebe solicitações em linguagem natural, utiliza **Qwen via Ollama** para sugerir categoria, prioridade, equipe e resposta, e apresenta os resultados para **aprovação ou rejeição humana**. O painel registra métricas verificáveis e permite receber entradas pelo **n8n**. A sincronização de metadados com Google Sheets é opcional.
