@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>DeskFlow AI · Central de solicitações</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Navegação">
+      <div class="identity"><div class="logo" aria-hidden="true">✳</div><div><strong>DeskFlow<span>AI</span></strong><small>OPERATIONS STUDIO</small></div></div>
+      <div class="sidebar-caption">WORKSPACE</div>
+      <nav><a class="nav-item active" href="#overview">◫ <span>Visão geral</span></a><a class="nav-item" href="#requests">☷ <span>Solicitações</span></a><a class="nav-item" href="#create">✦ <span>Nova triagem</span></a></nav>
+      <div class="sidebar-bottom"><div class="local-label"><span class="status-dot"></span> Ambiente local</div><p>IA assistiva · decisão humana.</p><p>Dados de demonstração por padrão.</p></div>
+    </aside>
+    <div class="main-column">
+      <header class="topbar"><div><span class="breadcrumbs">Workspace <span>/</span> Operações</span><h1>Painel de triagem <span>inteligente</span></h1></div><div class="top-actions"><span class="system-pill" id="system-status">Verificando modelo…</span><button class="btn btn-secondary" type="button" id="refresh">↻ Atualizar</button></div></header>
+      <main>
+        <section class="hero" id="overview"><div class="hero-orb" aria-hidden="true"></div><div class="hero-copy"><span class="eyebrow"><span class="sparkle">✧</span> HUMAN-IN-THE-LOOP AUTOMATION</span><h2>Menos triagem manual.<br><em>Mais clareza nas decisões.</em></h2><p>Organize solicitações com sugestões de IA local e controle de revisão humana. Meça os resultados sem inventar ganhos.</p><div class="hero-actions"><a class="btn btn-primary" href="#create">Nova solicitação <span>↗</span></a><a class="btn btn-ghost" href="#requests">Ver fila de revisão →</a></div></div><div class="hero-graphic" aria-hidden="true"><div class="flow-flow"><span>Solicitação</span><span class="flow-line">↓</span><span class="flow-accent">AI TRIAGE</span><span class="flow-line">↓</span><span>Revisão humana <b>✓</b></span></div></div></section>
+        <section class="metrics" aria-label="Indicadores" id="metrics">
+          <article class="metric"><div class="metric-label">Total de solicitações <span>↗</span></div><strong id="metric-total">—</strong><small>Recebidas no ambiente</small></article>
+          <article class="metric"><div class="metric-label">Aguardando revisão <span>◷</span></div><strong id="metric-pending">—</strong><small>Ainda não aprovadas</small></article>
+          <article class="metric"><div class="metric-label">Taxa de ajuste <span>↔</span></div><strong id="metric-override">—</strong><small>Diferença entre sugestão e revisão</small></article>
+          <article class="metric"><div class="metric-label">Latência média IA <span>◴</span></div><strong id="metric-latency">—</strong><small>Somente chamadas reais do Ollama</small></article>
+        </section>
+        <section class="workspace-grid">
+          <div class="panel panel-main" id="requests"><div class="panel-header"><div><span class="eyebrow subdued">OPERATIONS</span><h3>Solicitações recentes</h3><p>Abra uma solicitação para revisar e tomar a decisão final.</p></div><div class="panel-actions"><label class="select-wrap"><span class="sr-only">Filtrar por status</span><select id="filter-status"><option value="all">Todos os status</option><option value="pending">Aguardando</option><option value="approved">Aprovados</option><option value="rejected">Rejeitados</option></select></label><a id="export" class="btn btn-outline" href="/api/export.csv">Exportar CSV ↓</a></div></div><div class="table-scroll"><table><thead><tr><th>SOLICITAÇÃO</th><th>CATEGORIA</th><th>PRIORIDADE</th><th>STATUS</th><th>FONTE</th></tr></thead><tbody id="tickets-body"><tr><td colspan="5" class="empty">Carregando solicitações…</td></tr></tbody></table></div></div>
+          <div class="panel panel-side" id="create"><div class="panel-header"><div><span class="eyebrow subdued">INTAKE</span><h3>Nova solicitação</h3><p>Uma sugestão será gerada antes da revisão.</p></div><span class="intake-icon">✧</span></div><form id="new-ticket-form"><label for="request-title">Assunto</label><input required minlength="5" maxlength="150" id="request-title" placeholder="Ex.: Acesso bloqueado no sistema"><label for="requester">Solicitante</label><input required minlength="2" maxlength="100" id="requester" value="Pessoa de demonstração"><label for="request-description">Descrição</label><textarea id="request-description" required minlength="12" maxlength="3500" rows="5" placeholder="Descreva o problema, impacto e contexto…"></textarea><button id="submit-ticket" class="btn btn-primary btn-full" type="submit">Analisar solicitação <span>✧</span></button><p class="form-footnote">A IA sugere. A aprovação continua humana.</p></form></div>
+        </section>
+        <section class="bottom-note"><span>DESKFLOW AI</span><p>Projeto de portfólio · modelo executado localmente via Ollama · nenhuma decisão operacional automática.</p></section>
+      </main>
+    </div>
+  </div>
+  <dialog id="review-modal" aria-labelledby="dialog-title"><form method="dialog" class="dialog-close"><button aria-label="Fechar" class="close" value="cancel">×</button></form><div class="dialog-top"><span class="eyebrow">HUMAN REVIEW</span><h3 id="dialog-title">Revisar triagem</h3><p id="dialog-subtitle">Confira a sugestão gerada antes de aprovar.</p></div><div id="review-summary" class="review-summary"></div><form id="review-form"><div class="field-grid"><label>Categoria<select name="category" id="review-category"></select></label><label>Prioridade<select name="priority" id="review-priority"></select></label></div><label>Equipe<select name="team" id="review-team"></select></label><label>Resposta sugerida<textarea name="suggested_reply" id="review-reply" rows="4" maxlength="1000" required></textarea></label><label>Observação do revisor<textarea name="reviewer_note" id="review-note" rows="2" maxlength="500" placeholder="Opcional: motivo da alteração"></textarea></label><div class="dialog-actions"><button type="button" class="btn btn-danger" id="reject-ticket">Rejeitar</button><button type="submit" class="btn btn-primary" id="approve-ticket">Aprovar revisão ✓</button></div></form></dialog>
+  <div class="toast" role="status" id="toast"></div>
+</body>
+</html>

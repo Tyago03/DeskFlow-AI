@@ -1,0 +1,16 @@
+{"id":"T01","title":"Conta de acesso bloqueada","description":"A minha conta no portal corporativo foi bloqueada após tentativas de senha.","expected_category":"acesso","expected_priority":"media"}
+{"id":"T02","title":"VPN sem conectar","description":"Não consigo trabalhar remotamente porque a VPN caiu e preciso acessar o servidor.","expected_category":"rede","expected_priority":"alta"}
+{"id":"T03","title":"Tela do notebook piscando","description":"O monitor externo desconecta e pisca várias vezes ao longo do dia.","expected_category":"hardware","expected_priority":"media"}
+{"id":"T04","title":"Erro no aplicativo de emissão","description":"O aplicativo fecha ao tentar salvar um cadastro no sistema de testes.","expected_category":"software","expected_priority":"media"}
+{"id":"T05","title":"Nota fiscal duplicada","description":"Preciso verificar o lançamento de uma nota fiscal duplicada no relatório.","expected_category":"financeiro","expected_priority":"media"}
+{"id":"T06","title":"Dúvida sobre horários de treinamento","description":"Quando possível, quero saber como me inscrever no treinamento da próxima semana.","expected_category":"outros","expected_priority":"baixa"}
+{"id":"T07","title":"Wi-Fi fora no escritório inteiro","description":"Todos os funcionários ficaram sem internet e não conseguem acessar os sistemas.","expected_category":"rede","expected_priority":"critica"}
+{"id":"T08","title":"Mouse sem resposta","description":"O mouse USB não responde mesmo após trocar de porta.","expected_category":"hardware","expected_priority":"media"}
+{"id":"T09","title":"Solicitar permissão de pasta","description":"Preciso de acesso a uma pasta compartilhada e aprovação do meu gestor.","expected_category":"acesso","expected_priority":"media"}
+{"id":"T10","title":"Reembolso de transporte","description":"Minha despesa de transporte não apareceu no processo de reembolso.","expected_category":"financeiro","expected_priority":"media"}
+{"id":"T11","title":"Atualização do sistema interno","description":"Existe um erro ao atualizar o software da equipe de cadastro.","expected_category":"software","expected_priority":"media"}
+{"id":"T12","title":"Solicitação geral de material","description":"Poderiam informar onde encontro o documento de boas-vindas aos novos colaboradores?", "expected_category":"outros","expected_priority":"media"}
+{"id":"T13","title":"Senha expirada e sessão encerrada","description":"A senha do portal venceu e estou sem acesso ao painel desde esta manhã.","expected_category":"acesso","expected_priority":"alta"}
+{"id":"T14","title":"Notebook não liga","description":"O notebook não liga ao pressionar o botão mesmo conectado ao carregador.","expected_category":"hardware","expected_priority":"media"}
+{"id":"T15","title":"Sistema de apontamento lento","description":"O aplicativo de apontamento congela ao salvar horas do projeto.","expected_category":"software","expected_priority":"media"}
+{"id":"T16","title":"Conexão de rede instável","description":"A internet cai por alguns minutos quando usamos a sala de reuniões.","expected_category":"rede","expected_priority":"media"}

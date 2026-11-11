@@ -1,0 +1,55 @@
+{
+  "name": "DeskFlow AI | Entrada via Webhook",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "deskflow-intake",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "deskflow-webhook-in",
+      "name": "Webhook de entrada",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 320],
+      "webhookId": "deskflow-intake"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/api/integrations/tickets",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({title:$json.body.title,description:$json.body.description,requester:($json.body.requester || 'Solicitante de demonstração'),source:'n8n'}) }}",
+        "options": {"timeout": 120000}
+      },
+      "id": "deskflow-forward-ticket",
+      "name": "Enviar para DeskFlow",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [490, 320]
+    },
+    {
+      "parameters": {
+        "respondWith": "firstIncomingItem",
+        "options": {}
+      },
+      "id": "deskflow-response",
+      "name": "Responder com ticket",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [750, 320]
+    }
+  ],
+  "connections": {
+    "Webhook de entrada": {"main": [[{"node": "Enviar para DeskFlow", "type": "main", "index": 0}]]},
+    "Enviar para DeskFlow": {"main": [[{"node": "Responder com ticket", "type": "main", "index": 0}]]}
+  },
+  "settings": {"executionOrder": "v1"},
+  "active": false,
+  "tags": [],
+  "pinData": {}
+}

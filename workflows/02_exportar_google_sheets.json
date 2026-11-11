@@ -1,0 +1,85 @@
+{
+  "name": "DeskFlow AI | Sincronizar indicadores ao Sheets (opt-in)",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "deskflow-manual-sync",
+      "name": "Sincronizar manualmente",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [230, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://host.docker.internal:8000/api/integrations/sheets_rows",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {"timeout": 30000}
+      },
+      "id": "deskflow-get-export",
+      "name": "Consultar métricas DeskFlow",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [470, 300]
+    },
+    {
+      "parameters": {"fieldToSplitOut": "rows", "options": {}},
+      "id": "deskflow-split-records",
+      "name": "Separar linhas",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [710, 300]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {"__rl": true, "value": "REPLACE_WITH_SHEET_ID", "mode": "id"},
+        "sheetName": {"__rl": true, "value": "Solicitacoes", "mode": "name"},
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ticket_id": "={{ $json.ticket_id }}",
+            "created_at": "={{ $json.created_at }}",
+            "status": "={{ $json.status }}",
+            "category": "={{ $json.category }}",
+            "priority": "={{ $json.priority }}",
+            "team": "={{ $json.team }}",
+            "source": "={{ $json.source }}",
+            "triage_mode": "={{ $json.triage_mode }}",
+            "latency_ms": "={{ $json.latency_ms }}",
+            "review_changed": "={{ $json.review_changed }}"
+          },
+          "matchingColumns": ["ticket_id"],
+          "schema": [
+            {"id":"ticket_id","displayName":"ticket_id","required":false,"defaultMatch":false,"display":true,"type":"string","canBeUsedToMatch":true},
+            {"id":"created_at","displayName":"created_at","required":false,"defaultMatch":false,"display":true,"type":"string","canBeUsedToMatch":false},
+            {"id":"status","displayName":"status","required":false,"defaultMatch":false,"display":true,"type":"string","canBeUsedToMatch":false},
+            {"id":"category","displayName":"category","required":false,"defaultMatch":false,"display":true,"type":"string","canBeUsedToMatch":false},
+            {"id":"priority","displayName":"priority","required":false,"defaultMatch":false,"display":true,"type":"string","canBeUsedToMatch":false},
+            {"id":"team","displayName":"team","required":false,"defaultMatch":false,"display":true,"type":"string","canBeUsedToMatch":false},
+            {"id":"source","displayName":"source","required":false,"defaultMatch":false,"display":true,"type":"string","canBeUsedToMatch":false},
+            {"id":"triage_mode","displayName":"triage_mode","required":false,"defaultMatch":false,"display":true,"type":"string","canBeUsedToMatch":false},
+            {"id":"latency_ms","displayName":"latency_ms","required":false,"defaultMatch":false,"display":true,"type":"number","canBeUsedToMatch":false},
+            {"id":"review_changed","displayName":"review_changed","required":false,"defaultMatch":false,"display":true,"type":"boolean","canBeUsedToMatch":false}
+          ]
+        },
+        "options": {}
+      },
+      "id": "deskflow-google-sheets",
+      "name": "Atualizar planilha",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [980, 300]
+    }
+  ],
+  "connections": {
+    "Sincronizar manualmente": {"main": [[{"node": "Consultar métricas DeskFlow", "type": "main", "index": 0}]]},
+    "Consultar métricas DeskFlow": {"main": [[{"node": "Separar linhas", "type": "main", "index": 0}]]},
+    "Separar linhas": {"main": [[{"node": "Atualizar planilha", "type": "main", "index": 0}]]}
+  },
+  "settings": {"executionOrder": "v1"},
+  "active": false,
+  "tags": [],
+  "pinData": {}
+}
