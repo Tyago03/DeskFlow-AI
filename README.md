@@ -4,7 +4,7 @@
 
 Projeto de portfólio voltado à construção de automações corporativas com inteligência artificial. O DeskFlow recebe solicitações em linguagem natural, utiliza **Qwen via Ollama** para sugerir categoria, prioridade, equipe e resposta, e apresenta os resultados para **aprovação ou rejeição humana**. O painel registra métricas verificáveis e permite receber entradas pelo **n8n**. A sincronização de metadados com Google Sheets é opcional.
 
-> **Estado:** MVP local implementado e testado com respostas simuladas do LLM. A execução real do Qwen, a importação do n8n e a sincronização com Google Sheets precisam ser validadas no computador do usuário. O projeto não declara uso empresarial em produção nem resultados de economia de horas não medidos.
+> **Estado:** MVP local com **Qwen executado e avaliado em 16 solicitações sintéticas**, entrada de tickets via **n8n validada ponta a ponta** e sincronização **manual** de metadados com Google Sheets confirmada. Os testes automatizados continuam usando simulações; não há uso empresarial em produção nem economia de horas mensurada.
 
 ## Interface
 
@@ -95,6 +95,8 @@ O repositório inclui `compose.yaml` e **dois fluxos importáveis**:
 1. `workflows/01_entrada_n8n.json`: webhook → autenticação Header Auth → API DeskFlow → resposta.
 2. `workflows/02_exportar_google_sheets.json`: execução manual → consulta de metadados → Google Sheets (opcional, precisa de sua credencial OAuth).
 
+**Validação prática (10–11/11/2026):** o fluxo de webhook recebeu uma solicitação fictícia, chamou o DeskFlow com autenticação e devolveu ao PowerShell a triagem do Qwen (`triage_mode: ollama`). Em seguida, o fluxo de Google Sheets foi **executado manualmente com sucesso** e os registros foram conferidos diretamente na planilha. Ainda não existe sincronização automática agendada.
+
 Para configurar: `CONFIGURAR_INTEGRACAO.bat` gera uma chave **local** em `.env`, que nunca deve ser versionada. Depois, `INICIAR_N8N.bat` sobe o painel do n8n no Docker Desktop e `INICIAR_COM_N8N.bat` permite que o contêiner alcance o FastAPI. **Essa opção coloca o backend escutando em `0.0.0.0`: restrinja o firewall e não abra a porta na internet.**
 
 O n8n exige que a credencial **Header Auth** com nome `X-DeskFlow-Key` seja configurada manualmente no editor. Isso evita embutir tokens nos workflows.
@@ -115,7 +117,28 @@ Para avaliar o Qwen real, com Ollama em execução:
 .\AVALIAR_DESKFLOW.bat
 ```
 
-A avaliação calcula acerto de **categoria**, **prioridade**, acerto conjunto e latência em **16 solicitações sintéticas**. Os resultados ficam em `evaluation/results/` e são ignorados pelo Git. **Não equivalem a ganhos de produtividade nem precisão em produção.**
+A avaliação calcula acerto de **categoria**, **prioridade**, acerto conjunto e latência em **16 solicitações sintéticas**. Os resultados ficam em `evaluation/results/` e são ignorados pelo Git.
+
+### Resultados medidos com o Qwen local
+
+Avaliação executada pelo autor em 10/11/2026, com `qwen3:4b-instruct` via Ollama e 16 entradas sintéticas rotuladas:
+
+| Indicador | Resultado |
+| --- | ---: |
+| Categoria correta | **15/16 (93,75%)** |
+| Prioridade correta | **12/16 (75,00%)** |
+| Categoria e prioridade corretas no mesmo caso | **11/16 (68,75%)** |
+| Latência média nas 16 classificações | **4,1 s** |
+
+Houve **5 casos com divergência conjunta** (T07, T10, T12, T13 e T15), sobretudo na prioridade. A classificação por regras, **sem IA**, obteve 15/16 acertos de categoria e 16/16 de prioridade no mesmo conjunto; esses números ajudam a contextualizar os resultados e **não demonstram superioridade do Qwen**.
+
+### Validação de integração
+
+Em um teste local separado, duas solicitações fictícias foram processadas pelo Ollama e aprovadas após revisão humana. **Uma chegou pelo webhook do n8n**, e os metadados de ambas foram sincronizados manualmente para a planilha Google Sheets. A planilha confirmou 2 aprovadas, 1 origem n8n, nenhum ajuste nos campos revisados e **11,8 s de latência média** das duas chamadas reais.
+
+Esses **11,8 s** não são comparáveis diretamente aos **4,1 s** da avaliação de 16 casos: são amostras e contextos diferentes. **Nenhum desses resultados representa taxa de acerto em produção ou economia de tempo empresarial.**
+
+Detalhes, metodologia e limitações: [Resultados de laboratório](docs/RESULTADOS_DE_LABORATORIO.md) e [Validação técnica](VALIDACAO.md).
 
 O painel também apresenta a **taxa de ajustes humanos**, calculada a partir das revisões realizadas, e latência média **somente das chamadas reais ao Ollama** (nunca da baseline demo).
 
@@ -157,7 +180,7 @@ As duas imagens deste README são **demonstrações com dados sintéticos**. Par
 
 ## Limitações e evolução
 
-MVP educacional e local: sem login por colaborador, SLA real, fluxo de e-mails corporativos, autorização por equipe, fila assíncrona, multiusuário ou deploy público. Não foi executado n8n Docker nem Google Sheets com credenciais reais no ambiente de desenvolvimento. Próximas evoluções: autenticação, filas, avaliações com amostra maior, segmentação temporal e dados reais apenas com governança/LGPD.
+MVP educacional e local: sem login por colaborador, SLA real, fluxo de e-mails corporativos, autorização por equipe, fila assíncrona, multiusuário ou deploy público. **n8n e Google Sheets foram validados posteriormente no computador do autor**, com solicitações fictícias, OAuth próprio e sincronização manual. Isso não equivale a operação automatizada contínua nem a deploy público. Próximas evoluções: autenticação, filas, avaliação em amostras maiores, segmentação temporal e dados reais apenas com governança/LGPD.
 
 [Decisões técnicas](docs/ARQUITETURA.md) · [Resultados do laboratório](docs/RESULTADOS_DE_LABORATORIO.md) · [Roteiro de demonstração](docs/ROTEIRO_DE_DEMONSTRACAO.md) · [Documentação Ollama](https://docs.ollama.com/api/chat) · [Webhook n8n](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/) · [Google Sheets no n8n](https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/)
 

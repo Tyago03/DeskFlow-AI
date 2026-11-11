@@ -1,12 +1,12 @@
 # Integração n8n + Google Sheets
 
-Os arquivos `workflows/*.json` são **modelos de workflow importáveis**. É preciso conectar as credenciais do seu próprio n8n. Eles **não têm tokens embutidos** e não são ativados automaticamente. A importação real no n8n não foi executada no ambiente de desenvolvimento (Docker indisponível); valide os campos no editor após importar.
+Os arquivos `workflows/*.json` são **modelos de workflow importáveis**. É preciso conectar as credenciais do seu próprio n8n. Eles **não têm tokens embutidos** e não são ativados automaticamente. **Ambos foram importados e executados com sucesso no computador Windows do autor em 10–11/11/2026**, com dados fictícios. A configuração depende de credenciais locais; outras instalações precisam validar seus próprios acessos.
 
 ## Iniciar o n8n
 
 1. Instale **Docker Desktop** e confira `docker compose version`.
 2. Abra `INICIAR_N8N.bat` (ou execute `docker compose up -d` na raiz).
-3. Acesse `http://127.0.0.1:5678` e configure o proprietário da instância local. Não exponha a porta na internet.
+3. Acesse **`http://localhost:5678`** e configure o proprietário da instância local. Não exponha a porta na internet. Prefira usar sempre esse host no navegador durante o OAuth: alternar entre `127.0.0.1` e `localhost` pode causar problemas de sessão/cookies no retorno.
 
 ## Preparar credencial do backend
 
@@ -28,8 +28,10 @@ Exemplo com PowerShell (substitua a URL pela que o n8n mostrar):
 
 ```powershell
 $body = @{ title = "VPN desconectando na reunião"; description = "A conexão cai a cada dez minutos e atrapalha reuniões internas."; requester = "Pessoa fictícia" } | ConvertTo-Json
-Invoke-RestMethod -Uri "http://127.0.0.1:5678/webhook-test/deskflow-intake" -Method Post -ContentType "application/json" -Body $body
+Invoke-RestMethod -Uri "http://localhost:5678/webhook-test/deskflow-intake" -Method Post -ContentType "application/json; charset=utf-8" -Body ([System.Text.Encoding]::UTF8.GetBytes($body))
 ```
+
+**Validação real:** o workflow foi executado usando o botão **Execute** no editor do n8n, enquanto o PowerShell enviava a requisição à Test URL. Os três nós ficaram concluídos e o PowerShell recebeu o ticket com classificação do Qwen. O registro apareceu pendente no DeskFlow e foi aprovado depois pela interface.
 
 O webhook retorna a solicitação recebida e sua sugestão de triagem, que aparece **pendente de aprovação** no painel DeskFlow. Mesmo se o Qwen demorar, o workflow é síncrono nesta versão e pode estourar timeout; esse limite é intencionalmente documentado.
 
@@ -48,7 +50,7 @@ ticket_id | created_at | status | category | priority | team | source | triage_m
 6. Substitua `REPLACE_WITH_SHEET_ID` pelo ID da planilha e confira o nome da aba.
 7. Faça **execução manual**, examine as linhas, depois decida se quer automatizar com um Schedule Trigger.
 
-O fluxo utiliza **Append or Update Row** pela coluna `ticket_id` para evitar duplicação. O endpoint `/api/integrations/sheets_rows` não transmite nome do solicitante, título, descrição ou resposta sugerida. **A sincronização automática não é ativada sem sua configuração.**
+O fluxo utiliza **Append or Update Row** pela coluna `ticket_id` para evitar duplicação. O endpoint `/api/integrations/sheets_rows` não transmite nome do solicitante, título, descrição ou resposta sugerida. **Validação real:** o fluxo foi importado no n8n self-hosted, autorizado por OAuth Google em modo de testes e executado **manualmente**. A leitura posterior do Google Sheets confirmou duas linhas com origem `web` e `n8n`, ambas aprovadas, e os indicadores atualizados no `Resumo`. **A sincronização automática não foi ativada**: para agendar atualizações, é necessário configurar um gatilho específico. A planilha e as credenciais são recursos privados do autor, não parte do repositório.
 
 ## Cuidados
 
